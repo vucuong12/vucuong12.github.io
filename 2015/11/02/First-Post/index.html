@@ -3,18 +3,20 @@
 <head>
   <meta charset="utf-8">
   
-  <title>First Post | Cuong Nguyen&#39;s Blog</title>
+  <title>Javascript Event Loop with Node.js for Beginners | Cuong Nguyen&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Cuong Nguyen">
+  <meta name="description" content="Understanding how Node.js works is often difficult for beginners. Some popular questions are: What is “single-threaded”? What is “non-blocking”? What is “asynchronous”? What is “event loop” ? In this">
 <meta property="og:type" content="article">
-<meta property="og:title" content="First Post">
+<meta property="og:title" content="Javascript Event Loop with Node.js for Beginners">
 <meta property="og:url" content="http://vucuong12.github.io/2015/11/02/First-Post/index.html">
 <meta property="og:site_name" content="Cuong Nguyen's Blog">
-<meta property="og:description" content="Cuong Nguyen">
-<meta property="og:updated_time" content="2015-11-02T06:56:53.010Z">
+<meta property="og:description" content="Understanding how Node.js works is often difficult for beginners. Some popular questions are: What is “single-threaded”? What is “non-blocking”? What is “asynchronous”? What is “event loop” ? In this">
+<meta property="og:image" content="http://vucuong12.github.io/css/images/eventloop.png">
+<meta property="og:image" content="http://vucuong12.github.io/css/images/summary.png">
+<meta property="og:updated_time" content="2015-11-05T13:05:03.339Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="First Post">
-<meta name="twitter:description" content="Cuong Nguyen">
+<meta name="twitter:title" content="Javascript Event Loop with Node.js for Beginners">
+<meta name="twitter:description" content="Understanding how Node.js works is often difficult for beginners. Some popular questions are: What is “single-threaded”? What is “non-blocking”? What is “asynchronous”? What is “event loop” ? In this">
   
     <link rel="alternative" href="/atom.xml" title="Cuong Nguyen&#39;s Blog" type="application/atom+xml">
   
@@ -60,7 +62,7 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="cd-First-Post" class="article article-type-cd" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-First-Post" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/11/02/First-Post/" class="article-date">
   <time datetime="2015-11-02T05:43:45.000Z" itemprop="datePublished">2015-11-02</time>
@@ -74,7 +76,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      First Post
+      Javascript Event Loop with Node.js for Beginners
     </h1>
   
 
@@ -82,7 +84,32 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <p>Understanding how Node.js works is often difficult for beginners. Some popular questions are: What is “single-threaded”? What is “non-blocking”? What is “asynchronous”? What is “event loop” ? In this post, I will be making those ambiguous things clearer. We are not going to dive too deeply into low level details. Instead, I am going explain how Node.js works by looking at key mechanisms surrouding concept of “Event Loop”, which will hopefully give beginners a good start on their journey with Node.js.</p>
+<h2 id="What_is_JavaScript_Event_Loop?">What is JavaScript Event Loop?</h2><p>Event loop in Node.js is actually a part of JavaScript, the language used by Node.js. We can see <strong>event loop</strong> in both front-end and back-end work. In Node.js, event loop is important, but it is not alone. To understand how it works, we need to put it into a bigger pictures, where there are other components: <strong>Stack, Queue, and WebAPIs/C APIs</strong> as in the following diagram:</p>
+<p><img src="css/images/eventloop.png" alt="JavaScript Event Loop"></p>
+<h3 id="1-_To_understand_this_diagram,_let’s_look_at_a_front-end_example-">1. To understand this diagram, let’s look at a front-end example.</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">console.log(<span class="string">'How'</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">set</span>Timeout(<span class="keyword">function</span> <span class="function"><span class="title">callback</span></span>() &#123;</span><br><span class="line">	console.log(<span class="string">'are'</span>);</span><br><span class="line">&#125;, <span class="number">3000</span>);</span><br><span class="line"></span><br><span class="line">console.log(<span class="string">'you?'</span>);</span><br></pre></td></tr></table></figure>
+<p>The result is:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">How</span><br><span class="line">you?</span><br><span class="line">are</span><br></pre></td></tr></table></figure></p>
+<p>So, what happened under the hood ?</p>
+<ul>
+<li>Step 1: <code>console.log.log(&#39;How&#39;)</code> is put into stack, print out <code>How</code>, then finishes. The stack is then empty.</li>
+<li>Step 2:<br><code>setTimeout(function callback() {
+  console.log(&#39;are&#39;);
+}, 3000);</code> is put into stack. It sends a request to webAPI, and then is popped out of stack. Stack is then again empty. </li>
+<li>Step 3: <code>console.log.log(&#39;you?&#39;)</code> is put into stack, print out <code>you?</code>, then finishes. The stack is then empty. </li>
+<li>Step 4: 3000 millisecond after request in step 2 was sent, the <code>callback() {
+  console.log(&#39;are&#39;);
+}</code> is sent to the queue, then back to the stack, prints out <code>are</code>. Then the stack is empty again.</li>
+</ul>
+<p><strong>The important things happen here </strong>: The statement (<code>console.log(&#39;you?&#39;);</code>) will be executed without waiting for 3000 milliseconds. The work done within such 3 seconds is <strong>handled inside webAPIs</strong>, which is  <strong>outside</strong> of current the thread running JavasCript code, so it will <strong>not block the current thread for 3 seconds</strong>. This is why <strong>Node.js is non-blocking</strong>. When the work is done, it will send the <code>callback() {
+    console.log(&#39;are&#39;);
+}</code> to the queue (enqueue). We can consider such a callback as an <strong>event</strong>. Callbacks in the queue will one-by-one be enqueued and move to the stack with the condition that a callback in the queue can enter the stack only when stack is empty. In this case, the <strong>event loop</strong> get an <strong>event</strong> (callback) from the queue, and push such a callback to the stack. <strong>This mechanism ensures the single-threaded property of JavaScript</strong>. <strong>Single threaded</strong> means JavaScript engine (V8) executes one thing at a time. Using stack, JavaSript is able to execute one thing at a time in a single thread (How stack works will function calls is explained here <a href="https://www.youtube.com/watch?v=beqqGIdabrE" target="_blank" rel="external">Stack call</a> )</p>
+<h3 id="2-_How_about_Node-js?_How_does_it_work_with_the_above_diagram?">2. How about Node.js? How does it work with the above diagram?</h3><p>The main idea is generally similar. A slightly different point is that: Node.js use C APIs such libuv instead of WebAPIS. Libuv abstracts way of underlying network and files system function. Another important point is that a new request from user coming in is one kind of event, which means that it will be in the queue before going to the stack as usual event.</p>
+<h1 id="So,_what_to_remember?">So, what to remember?</h1><ul>
+<li>JavaScript code runs in a single-threaded way (one at a time).</li>
+<li>Heavy work (such as I/O) will be given out to other “guys” (WebAPIs, C APIs) to handle. When such guys finish their jobs, they push the results (notifications) to the queue, then to the stack, ensuring that JavaScript code runs in a single-threaded way. By giving heavy work to such guys and keep running JavaScript code, Node.js can handle multiples requests almost concurrently because JavaScript code runs a lot faster than I/O work. The request n+1 will be handled right after JavaScript code of request n finishes running (heavy work is now being handled outside the current thread), which is very fast, thus making these 2 requests seem to run concurrently. </li>
+</ul>
+<p><img src="css/images/summary.png" alt="What to remember"></p>
+
       
     </div>
     <footer class="article-footer">
@@ -93,16 +120,6 @@
   </div>
   
     
-<nav id="article-nav">
-  
-  
-    <a href="/2015/11/02/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">Hello World</div>
-    </a>
-  
-</nav>
-
   
 </article>
 
@@ -120,7 +137,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/11/">November 2015</a><span class="archive-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -132,11 +149,7 @@
       <ul>
         
           <li>
-            <a href="/2015/11/02/First-Post/">First Post</a>
-          </li>
-        
-          <li>
-            <a href="/2015/11/02/hello-world/">Hello World</a>
+            <a href="/2015/11/02/First-Post/">Javascript Event Loop with Node.js for Beginners</a>
           </li>
         
       </ul>
