@@ -1,0 +1,41 @@
+#info{
+    margin-top: 20px;
+}
+
+.number {   
+    color: blue;
+    font-weight: bold;
+    border-radius: 10%;
+    border: 10px solid red;
+    padding: 20px;
+    width: 100px;
+    height: 100px;
+    margin-right: 6px;
+    margin-left: 6px;
+    display: inline-block;
+    text-align: center;
+}
+
+#sign {
+    color: green    ;
+    font-weight: bold;
+    /*border-radius: 10%;
+    border: 10px solid red;*/
+    padding: 20px;
+    width: 100px;
+    height: 100px;
+    margin-right: 6px;
+    margin-left: 6px;
+    display: inline-block;
+    text-align: center;
+}
+
+#start{
+    width: 63px;
+    heigth: 34px;
+}
+
+#result {
+
+}
+
