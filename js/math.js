@@ -10,10 +10,11 @@ var timeManager;
 function writeTime(){
 	//console.log(date.getTime());
 	var date = new Date();
-	document.getElementById("time").innerHTML = "Time (max 2500 ms per round): " + (date.getTime() - startingTime);
+	document.getElementById("time").innerHTML = date.getTime() - startingTime;
 }
 
 function runTimeEachRound(){
+	if (timeManager) clearInterval(timeManager);
 	writeTime();
 	timeManager = setInterval(writeTime, 100);
 }
@@ -25,8 +26,9 @@ function runRound(){
 
 	runTimeEachRound();
 	
-	if (numRound > 1){
-		if (numPress != numRound) announceAndStop();
+	if (numRound >= 1){
+		if (numPress != numRound) {announceAndStop();return;}
+		
 	}
 	document.getElementById("round").innerHTML = "Round " + (++numRound);
     var num1 = Math.floor((Math.random() * 50) + 1);
@@ -43,7 +45,7 @@ function run(){
 	state = "on";
 	document.getElementById("result").innerHTML = "";
 	runRound();
-    roundManager = setInterval(runRound, 2500);
+    roundManager = setInterval(runRound, 1000);
 }
 
 function keepGoing(){
@@ -59,12 +61,12 @@ function announceAndStop(){
 
 function stop(){
 	if (timeManager) clearInterval(timeManager);
-	document.getElementById("time").innerHTML = "Time (max 2500 ms per round): 0";
+	document.getElementById("time").innerHTML = "Time for each round: 1000s";
 	numPress = 0;
 	clearInterval(roundManager);
 	document.getElementById("first-number").innerHTML = 0;
     document.getElementById("second-number").innerHTML = 0;
-    document.getElementById("round").innerHTML = "Round 1";
+    document.getElementById("round").innerHTML = 1;
 	numRound = 0;
 	state = "off";
 }
@@ -78,14 +80,17 @@ $(document).ready(function(){
 	});
 
 	$("#reset").click(function (e) {
+		document.getElementById("result").innerHTML = "";
 	    stop();  
 	});
 
 	$(document).keydown(function(e) {
 	    switch(e.which) {
 	    	case 32:
-	    		if (state == "off")
+	    		if (state == "off") {
+	    			stop();
 	    			run();
+	    		}
 	    		else 
 	    			stop();
 	    		break;
