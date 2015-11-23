@@ -61,7 +61,7 @@ function announceAndStop(){
 
 function stop(){
 	if (timeManager) clearInterval(timeManager);
-	document.getElementById("time").innerHTML = "Time for each round: 1000s";
+	document.getElementById("time").innerHTML = "Time for each round: 1000ms";
 	numPress = 0;
 	clearInterval(roundManager);
 	document.getElementById("first-number").innerHTML = 0;
